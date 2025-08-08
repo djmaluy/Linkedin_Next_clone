@@ -1,9 +1,9 @@
 import Header from "@/components/Header";
+import { NextAuthProvider } from "@/components/NextAuthProvider";
+import { ReactQueryClientProvider } from "@/components/ReactQueryClientProvider";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Learning NextJS",
@@ -17,14 +17,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {/* Toaster */}
-        <header>
-          <Header />
-        </header>
-        <div>
-          <main>{children}</main>
-        </div>
+      <body className="min-h-screen flex flex-col">
+        <ReactQueryClientProvider>
+          <NextAuthProvider>
+            <header className="border-b sticky top-0 z-50 bg-white">
+              <Header />
+            </header>
+            <div className="bg-[#F4F2ED] flex-1 w-full">
+              <main>{children}</main>
+            </div>
+          </NextAuthProvider>
+        </ReactQueryClientProvider>
       </body>
     </html>
   );

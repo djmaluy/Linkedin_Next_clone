@@ -1,0 +1,44 @@
+services:
+  postgres:
+    container_name: db
+    image: postgres:13.13
+    volumes:
+      - ./api/tmp/log:/var/log/postgresql
+      - ./api/tmp/db:/var/lib/postgresql/data
+    # env_file:
+    #   - ./api/.env
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: api_development
+  api:
+    container_name: backend
+    depends_on:
+      - postgres
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    # env_file:
+    #   - ./api/.env
+    entrypoint: ["./entrypoint.sh"]
+    volumes:
+      - ./api:/api
+    ports:
+      - 3000:3000
+    stdin_open: true
+    tty: true
+  # web:
+  #   platform: linux/amd64
+  #   container_name: frontend
+  #   depends_on:
+  #     - api
+  #   build:
+  #     context: ./web
+  #     dockerfile: Dockerfile
+  #   command: npm run dev -- --port 4000
+  #   volumes:
+  #     - ./web:/web
+  #   ports:
+  #     - 4000:4000

@@ -1,7 +1,23 @@
-import { SearchIcon } from "lucide-react";
+"use client";
+
+import { handleSignIn, handleSignOut } from "@/lib/auth";
+import {
+  Briefcase,
+  HomeIcon,
+  MessageSquare,
+  SearchIcon,
+  UsersIcon,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "./ui/button";
 
 function Header() {
+  const { data: session } = useSession();
+
+  console.log("Session:", session);
+
   return (
     <div className="flex items-center p-2 max-w-6xl mx-auto">
       <Image
@@ -20,6 +36,34 @@ function Header() {
             className="bg-transparent flex-1 outline-none"
           />
         </form>
+      </div>
+      <div className="flex items-center space-x-4 px-6">
+        <Link href="/" className="icon ">
+          <HomeIcon className="h-5" />
+          <p>Home</p>
+        </Link>
+        <Link href="/" className="icon hidden md:flex ">
+          <UsersIcon className="h-5" />
+          <p>Network</p>
+        </Link>
+        <Link href="/" className="icon hidden md:flex ">
+          <Briefcase className="h-5" />
+          <p>Jobs</p>
+        </Link>
+        <Link href="/" className="icon flex f">
+          <MessageSquare className="h-5" />
+          <p>Messaging</p>
+        </Link>
+        <div>
+          {session ? (
+            <>
+              <Button onClick={handleSignOut}>Logout</Button>
+              <p>{session.user?.email}</p>
+            </>
+          ) : (
+            <Button onClick={handleSignIn}>Sign In</Button>
+          )}
+        </div>
       </div>
     </div>
   );
