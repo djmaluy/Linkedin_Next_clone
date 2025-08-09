@@ -1,4 +1,4 @@
-import userEndpoints from "./user";
+import userEndpoints from "./signIn";
 
 const endpoints = {
   users: userEndpoints,

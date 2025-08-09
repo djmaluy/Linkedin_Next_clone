@@ -1,6 +1,5 @@
 "use client";
 
-import { handleSignIn, handleSignOut } from "@/lib/auth";
 import {
   Briefcase,
   HomeIcon,
@@ -8,15 +7,15 @@ import {
   SearchIcon,
   UsersIcon,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { Avatar, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 
 function Header() {
   const { data: session } = useSession();
-
-  console.log("Session:", session);
 
   return (
     <div className="flex items-center p-2 max-w-6xl mx-auto">
@@ -54,14 +53,14 @@ function Header() {
           <MessageSquare className="h-5" />
           <p>Messaging</p>
         </Link>
+
         <div>
           {session ? (
-            <>
-              <Button onClick={handleSignOut}>Logout</Button>
-              <p>{session.user?.email}</p>
-            </>
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" />
+            </Avatar>
           ) : (
-            <Button onClick={handleSignIn}>Sign In</Button>
+            <Button onClick={() => signIn("google")}>Sign In</Button>
           )}
         </div>
       </div>
