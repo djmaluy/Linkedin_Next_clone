@@ -3,8 +3,6 @@ class V1::UsersController < ApplicationController
 
   def index
     @users = User.all
-
-    render :index, formats: :json
   end
 
   def show

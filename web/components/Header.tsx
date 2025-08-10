@@ -60,7 +60,9 @@ function Header() {
               <AvatarImage src="https://github.com/shadcn.png" />
             </Avatar>
           ) : (
-            <Button onClick={() => signIn("google")}>Sign In</Button>
+            <Button variant="outline" onClick={() => signIn("google")}>
+              Sign In
+            </Button>
           )}
         </div>
       </div>
