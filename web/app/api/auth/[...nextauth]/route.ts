@@ -5,6 +5,9 @@ declare module "next-auth" {
   interface Session {
     accessToken?: string;
     idToken?: string;
+    railsJwt?: string;
+    userEmail?: string;
+    userId?: string | number;
   }
 }
 
@@ -51,9 +54,11 @@ const authOptions: NextAuthOptions = {
           if (!res.ok) throw new Error("Login failed");
 
           const data = await res.json();
+          console.log(data);
 
           token.railsJwt = data.token;
           token.userEmail = data.email;
+          token.userId = data.id;
         } catch (err) {
           console.error("Error logging in to Rails:", err);
         }
@@ -61,11 +66,15 @@ const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        railsJwt: token.railsJwt,
-        userEmail: token.userEmail,
-      };
+      session.railsJwt =
+        typeof token.railsJwt === "string" ? token.railsJwt : undefined;
+      session.userEmail =
+        typeof token.userEmail === "string" ? token.userEmail : undefined;
+      session.userId =
+        typeof token.userId === "string" || typeof token.userId === "number"
+          ? token.userId
+          : undefined;
+      return session;
     },
   },
 };

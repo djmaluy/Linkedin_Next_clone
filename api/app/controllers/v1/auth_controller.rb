@@ -11,7 +11,8 @@ class V1::AuthController < ApplicationController
 
       render json: { 
         token: JsonWebToken.encode({ user_id: user.id }),
-        email: user.email
+        email: user.email,
+        id: user.id,
       }, status: :ok
 
     rescue => e

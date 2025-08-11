@@ -13,16 +13,18 @@ type ApiOptions = {
   params?: object;
 };
 
-export const api = async (url: string, options: ApiOptions = {}) => {
+export const api = async (
+  url: string,
+  options: ApiOptions = {},
+  accessToken = "ACCESS_TOKEN"
+) => {
   const { data, method = "get", params } = options;
-
-  const accessToken = "ACCESS_TOKEN";
 
   try {
     const response = await axiosInstance.request({
       data,
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: accessToken,
         "Content-Type": "application/json",
       },
       method,

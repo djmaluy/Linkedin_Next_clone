@@ -8,7 +8,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarImage } from "./ui/avatar";
@@ -54,7 +54,7 @@ function Header() {
           <p>Messaging</p>
         </Link>
 
-        <div>
+        <div className="flex items-center space-x-2">
           {session ? (
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
@@ -64,6 +64,9 @@ function Header() {
               Sign In
             </Button>
           )}
+          <Button variant="outline" onClick={() => signOut()}>
+            Logout
+          </Button>
         </div>
       </div>
     </div>

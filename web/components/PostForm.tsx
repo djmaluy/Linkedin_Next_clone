@@ -2,37 +2,73 @@
 "use client";
 
 import { ImageIcon, XIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
+
+import { createPost } from "@/app/actions/postActions";
 
 function PostForm() {
   const formRef = React.useRef<HTMLFormElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
+  const [base64ImageData, setBase64ImageData] = React.useState<{
+    base64: string;
+    filename: string;
+    contentType: string;
+  } | null>(null);
+  const { data } = useSession();
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setPreviewImage(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        setPreviewImage(result);
+
+        const base64 = result.split(",")[1];
+
+        setBase64ImageData({
+          base64,
+          filename: file.name,
+          contentType: file.type,
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handlePostAction = async (formData: FormData) => {
-    const formDataCopy = formData;
-    formRef.current?.reset();
+    const text = formData.get("postInput") as string;
 
-    const text = formDataCopy.get("postInput") as string;
-    if (!text.trim() && !previewImage) {
-      throw new Error("Post content cannot be empty");
+    if (!text.trim() && !base64ImageData) {
+      alert("Post content cannot be empty");
+      return;
     }
 
-    setPreviewImage(null);
+    const payload: any = {
+      message: text,
+      likes_count: 0,
+      user_email: data?.user?.email || "",
+    };
+
+    if (base64ImageData) {
+      payload.image = {
+        io: base64ImageData.base64,
+        filename: base64ImageData.filename,
+        content_type: base64ImageData.contentType,
+      };
+    }
 
     try {
+      await createPost(payload);
+      setPreviewImage(null);
+      setBase64ImageData(null);
+      formRef.current?.reset();
     } catch (error) {
       console.error("Error posting:", error);
-      throw new Error("Failed to post content");
     }
   };
 
@@ -88,7 +124,11 @@ function PostForm() {
             <Button
               variant="outline"
               type="button"
-              onClick={() => setPreviewImage(null)}
+              onClick={() => {
+                setPreviewImage(null);
+                setBase64ImageData(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
             >
               <XIcon className="mr-2" size={16} />
               Remove image
